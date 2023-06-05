@@ -38,7 +38,6 @@ header = """
       font-family: sans-serif;
       font-size: 16px;
       text-anchor: end;
-      fill: black;
     }
     
     .holiday {
@@ -146,13 +145,6 @@ def gen_cal(months, lst):
     else:
       text += '<svg x="{}" y="{}">'.format(dd[i][0]+n, dd[i][1]+m) + gen_month(month, []) + "</svg>"
   return text
-
-file += gen_cal(["1 2023", "2 2023", "3 2023", "4 2023", "5 2023", "6 2023"], 
-        [("2 1 2023", "blue", "yellow"),
-         ("3 3 2023", "yellow", "red"),
-         ("20 4 2023", "yellow", "black")
-  ]
-)
 # m = 180
 # n = 50
 # file += '<svg x="{}" y="{}">'.format(0 +n, 0+m) + one + "</svg>"
@@ -163,33 +155,88 @@ file += gen_cal(["1 2023", "2 2023", "3 2023", "4 2023", "5 2023", "6 2023"],
 
 # x="330" 
 # y="340"
+months = ["1 2023", "2 2023", "3 2023", "4 2023", "5 2023", "6 2023"]
+dates = [
+  ("2 1 2023", "blue", "yellow", "something 1"),
+  ("3 3 2023", "yellow", "red", "something 2"),
+  ("20 4 2023", "yellow", "black", "something 3")
+]
 
-legends = """<svg x="50" y="880"> 
-<rect x="0" y="0" width="240" height="330" rx="10" ry="10" fill="lightblue"/>
-<text x="125" y="35" class="tile" font-weight="bold">Something</text>
+legends = [
+  ("red", "something 1"),
+  ("yellow", "something 2"),
+  ("blue", "something 3")
+]
 
-<circle cx="40" cy="75" r="12" fill="red"/>
-<text x="160" y="80" class="legend">Something</text>
+file += gen_cal(months, dates)
 
-<circle cx="40" cy="115" r="12" fill="red"/>
-<text x="160" y="120" class="legend">Something</text>
+def make_note(title, width, leg):
+  text = f"""
+  <svg x="50" y="880"> 
+  <rect x="0" y="0" width="{width}" height="330" rx="10" ry="10" fill="lightblue"/>
+  <text x="125" y="35" class="tile" font-weight="bold">{title}</text>
+  """
+  m = 75
+  for i, l in enumerate(leg):
+    text += f"""<circle cx="40" cy="{m}" r="12" fill="{l[1]}"/>
+    <text x="160" y="{m+5}" class="legend" fill="{l[1]}">{l[0]}</text>"""
+    m += 40
+  text += "</svg>"
+  return text
 
-<circle cx="40" cy="155" r="12" fill="red"/>
-<text x="160" y="160" class="legend">Something</text>
 
-<circle cx="40" cy="195" r="12" fill="red"/>
-<text x="160" y="200" class="legend">Something</text>
-</svg>"""
-file += legends
+# legends = """<svg x="50" y="880"> 
+# <rect x="0" y="0" width="240" height="330" rx="10" ry="10" fill="lightblue"/>
+# <text x="125" y="35" class="tile" font-weight="bold">Something</text>
 
-holidays = """<svg x="375" y="880"> 
-<rect x="0" y="0" width="300" height="330" rx="10" ry="10" fill="lightblue"/>
-<text x="155" y="35" class="tile" font-weight="bold">Something</text>
+# <circle cx="40" cy="75" r="12" fill="red"/>
+# <text x="160" y="80" class="legend">Something</text>
 
-<text x="50" y="80" class="date">Jan 25</text>
-<text x="280" y="80" class="holiday" text-anchor="end">Something something</text>
-</svg>"""
-file += holidays
+# <circle cx="40" cy="115" r="12" fill="red"/>
+# <text x="160" y="120" class="legend">Something</text>
+
+# <circle cx="40" cy="155" r="12" fill="red"/>
+# <text x="160" y="160" class="legend">Something</text>
+
+# <circle cx="40" cy="195" r="12" fill="red"/>
+# <text x="160" y="200" class="legend">Something</text>
+# </svg>"""
+
+file += make_note("Notes", 240, [
+  ("Something 1", "red"),
+  ("Something 2", "blue"),
+  ("Something 3", "yellow")
+])
+
+
+def gen_holi(title, lst):
+  text = f"""
+  <svg x="375" y="880"> 
+  <rect x="0" y="0" width="300" height="330" rx="10" ry="10" fill="lightblue"/>
+  <text x="155" y="35" class="tile" font-weight="bold">{title}</text>
+  """
+  m = 80
+  for date, holi in lst:
+    text += f"""
+    <text x="50" y="{m}" class="date">{calendar.month_name[int(date.split(" ")[1])] + " " + date.split(" ")[0]}</text>
+    <text x="280" y="{m}" class="holiday" text-anchor="end">{holi}</text>
+    """
+    m += 20
+  text += "</svg>"
+  return text
+# holidays = """<svg x="375" y="880"> 
+# <rect x="0" y="0" width="300" height="330" rx="10" ry="10" fill="lightblue"/>
+# <text x="155" y="35" class="tile" font-weight="bold">Something</text>
+
+# <text x="50" y="80" class="date">Jan 25</text>
+# <text x="280" y="80" class="holiday" text-anchor="end">Something something</text>
+# </svg>"""
+file += gen_holi("Holidays", [
+  ("1 1 2023", "Holi"),
+  ("24 3 2023", "Holi1"),
+  ("15 6 2023", "Holi2"),
+  ("12 5 2023", "Holi3")
+])
 
 other = """
 </svg>
