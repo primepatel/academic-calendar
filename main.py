@@ -5,6 +5,7 @@ import datetime, calendar
 header = """
 <svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1250">
   <!-- Define the styles for the calendar -->
+  <rect x="0" y="0" width="1080" height="1250" rx="0" ry="0" fill="white"/>
   <style>
     .header {
       font-family: Arial, sans-serif;
@@ -47,9 +48,8 @@ header = """
     }
     
     .date {
-      font-family: sans-serif;
+      font-family: monospace;
       font-size: 16px;
-      text-anchor: middle;
       fill: black;
       font-weight:bold;
     }
@@ -117,7 +117,9 @@ def gen_month(month_name, lst):
 #     date = d + start - 1
 #     cal[date//7][date%7][1] = col
 
-file += '<image href="iscm.jpg" x="60" y="50" width="105" height="105" />'
+
+# iscm.jpg
+file += '<image href="https://i.ibb.co/vYPQRcR/iscm.jpg" x="60" y="50" width="105" height="105" />'
 file += '<text  x="550" y="85" class="college" font-weight="bold">The Institute of Science, Mumbai</text>'
 file += '<text  x="550" y="135" class="title" font-weight="bold">Academic Calendar 2023-24</text>'
 
@@ -172,7 +174,7 @@ file += gen_cal(months, dates)
 
 def make_note(title, width, leg):
   text = f"""
-  <svg x="50" y="880"> 
+  <svg x="60" y="880"> 
   <rect x="0" y="0" width="{width}" height="330" rx="10" ry="10" fill="lightblue"/>
   <text x="125" y="35" class="tile" font-weight="bold">{title}</text>
   """
@@ -202,23 +204,23 @@ def make_note(title, width, leg):
 # <text x="160" y="200" class="legend">Something</text>
 # </svg>"""
 
-file += make_note("Notes", 240, [
+file += make_note("Notes", 310, [
   ("Something 1", "red"),
   ("Something 2", "blue"),
   ("Something 3", "yellow")
 ])
 
 
-def gen_holi(title, lst):
+def gen_holi(title, lst, x):
   text = f"""
-  <svg x="375" y="880"> 
-  <rect x="0" y="0" width="300" height="330" rx="10" ry="10" fill="lightblue"/>
+  <svg x="{x}" y="880"> 
+  <rect x="0" y="0" width="310" height="330" rx="10" ry="10" fill="lightblue"/>
   <text x="155" y="35" class="tile" font-weight="bold">{title}</text>
   """
   m = 80
   for date, holi in lst:
     text += f"""
-    <text x="50" y="{m}" class="date">{calendar.month_name[int(date.split(" ")[1])] + " " + date.split(" ")[0]}</text>
+    <text x="20" y="{m}" class="date">{calendar.month_name[int(date.split(" ")[1])][:3] + " " + date.split(" ")[0]}</text>
     <text x="280" y="{m}" class="holiday" text-anchor="end">{holi}</text>
     """
     m += 20
@@ -236,7 +238,14 @@ file += gen_holi("Holidays", [
   ("24 3 2023", "Holi1"),
   ("15 6 2023", "Holi2"),
   ("12 5 2023", "Holi3")
-])
+], 390)
+
+file += gen_holi("Holidays", [
+  ("1 1 2023", "Holi"),
+  ("24 3 2023", "Holi1"),
+  ("15 6 2023", "Holi2"),
+  ("12 5 2023", "Holi3")
+], 390 + 330)
 
 other = """
 </svg>
@@ -245,3 +254,7 @@ file += other
 
 with open("main.svg", "w") as svgfile:
     svgfile.write(file)
+    
+from cairosvg import svg2png
+
+svg2png(url="main.svg", write_to="main.png", output_height=1080)
